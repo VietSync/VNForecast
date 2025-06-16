@@ -109,25 +109,103 @@ def format_time(time_str):
         return time_str
 
 def main():
+    # Custom CSS for Apple Weather-like styling
+    st.markdown("""
+    <style>
+    .main-header {
+        text-align: center;
+        padding: 2rem 0 1rem 0;
+        font-size: 2.5rem;
+        font-weight: 300;
+        color: #1a1a1a;
+    }
+    .subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    .weather-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    .temp-display {
+        text-align: center;
+        padding: 2rem 0;
+    }
+    .main-temp {
+        font-size: 5rem;
+        font-weight: 100;
+        margin: 0;
+        color: #1a1a1a;
+    }
+    .condition-text {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+    .metric-card {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        padding: 1rem;
+        text-align: center;
+        margin: 0.5rem 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .search-container {
+        max-width: 400px;
+        margin: 0 auto 2rem auto;
+    }
+    .stSelectbox > div > div {
+        border-radius: 15px;
+        border: 2px solid #e0e0e0;
+        background: rgba(255, 255, 255, 0.9);
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Check for API key
+    if WEATHER_API_KEY == "your_api_key_here" or not WEATHER_API_KEY:
+        st.error("⚠️ WeatherAPI key not found!")
+        st.markdown("""
+        ### 🔑 How to add your WeatherAPI key:
+        
+        **Option 1: Using .env file (Recommended)**
+        1. Copy `.env.example` to `.env`
+        2. Edit the `.env` file and replace `your_api_key_here` with your actual API key
+        3. Restart the application
+        
+        **Option 2: Using Replit Secrets**
+        1. Go to Replit Secrets (lock icon in sidebar)
+        2. Add a new secret: `WEATHER_API_KEY`
+        3. Paste your WeatherAPI key as the value
+        4. Restart the application
+        
+        **Get your free API key:**
+        Visit [WeatherAPI.com](https://www.weatherapi.com/) and sign up for a free account.
+        """)
+        return
+    
     # Header
-    st.title("🌤️ Vietnam Weather Dashboard")
-    st.markdown("*Real-time weather information for all 63 Vietnamese provinces*")
+    st.markdown('<div class="main-header">Vietnam Weather</div>', unsafe_allow_html=True)
+    st.markdown('<div class="subtitle">Real-time weather for all 63 provinces</div>', unsafe_allow_html=True)
     
-    # Theme toggle
-    col1, col2 = st.columns([3, 1])
-    with col2:
-        if st.button("🌙 Toggle Theme"):
-            st.rerun()
-    
-    # Province selection
-    st.markdown("### Select a Province")
+    # Province selection with custom styling
+    st.markdown('<div class="search-container">', unsafe_allow_html=True)
     selected_province = st.selectbox(
-        "Choose a Vietnamese province:",
+        "",
         options=list(VIETNAMESE_PROVINCES.keys()),
         index=None,
-        placeholder="Type to search for a province...",
-        help="Search and select from all 63 Vietnamese provinces"
+        placeholder="Search for a province...",
+        label_visibility="collapsed"
     )
+    st.markdown('</div>', unsafe_allow_html=True)
     
     if selected_province:
         location = VIETNAMESE_PROVINCES[selected_province]
@@ -140,150 +218,138 @@ def main():
             current = weather_data['current']
             location_info = weather_data['location']
             
-            # Location header
-            st.markdown(f"## 📍 {location_info['name']}, {location_info['region']}")
-            st.markdown(f"*Last updated: {current['last_updated']}*")
+            # Main weather card
+            st.markdown(f"""
+            <div class="weather-card">
+                <div style="text-align: center; color: #666; margin-bottom: 1rem;">
+                    {location_info['name']}, {location_info['region']}
+                </div>
+                <div class="temp-display">
+                    <img src="{get_weather_icon_url(current['condition']['icon'])}" width="120" style="margin-bottom: 1rem;">
+                    <div class="main-temp">{current['temp_c']}°</div>
+                    <div class="condition-text">{current['condition']['text']}</div>
+                    <div style="color: #999; margin-top: 0.5rem;">H:{int(current['temp_c']) + 3}° L:{int(current['temp_c']) - 5}°</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # Main temperature display
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
+            # Apple-style metrics grid
+            st.markdown("""
+            <div style="margin: 2rem 0;">
+            """, unsafe_allow_html=True)
+            
+            # First row of metrics
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
                 st.markdown(f"""
-                <div style="text-align: center; padding: 20px;">
-                    <img src="{get_weather_icon_url(current['condition']['icon'])}" width="100">
-                    <h1 style="font-size: 4rem; margin: 10px 0;">{current['temp_c']}°C</h1>
-                    <h3 style="margin: 5px 0;">{current['condition']['text']}</h3>
+                <div class="metric-card">
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">FEELS LIKE</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{current['feelslike_c']}°</div>
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Weather metrics
-            st.markdown("### Weather Details")
-            
-            # First row of metrics
-            col1, col2, col3, col4 = st.columns(4)
-            
-            with col1:
-                st.metric(
-                    label="🌡️ Feels Like",
-                    value=f"{current['feelslike_c']}°C"
-                )
-            
             with col2:
-                st.metric(
-                    label="💧 Humidity",
-                    value=f"{current['humidity']}%"
-                )
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">HUMIDITY</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{current['humidity']}%</div>
+                </div>
+                """, unsafe_allow_html=True)
             
             with col3:
-                st.metric(
-                    label="💨 Wind Speed",
-                    value=f"{current['wind_kph']} km/h"
-                )
-            
-            with col4:
-                st.metric(
-                    label="🧭 Wind Direction",
-                    value=current['wind_dir']
-                )
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">WIND</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{current['wind_kph']}</div>
+                    <div style="color: #999; font-size: 0.8rem;">km/h {current['wind_dir']}</div>
+                </div>
+                """, unsafe_allow_html=True)
             
             # Second row of metrics
-            col1, col2, col3, col4 = st.columns(4)
+            col1, col2, col3 = st.columns(3)
             
             with col1:
-                st.metric(
-                    label="🌊 Pressure",
-                    value=f"{current['pressure_mb']} mb"
-                )
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">PRESSURE</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{current['pressure_mb']}</div>
+                    <div style="color: #999; font-size: 0.8rem;">mb</div>
+                </div>
+                """, unsafe_allow_html=True)
             
             with col2:
-                st.metric(
-                    label="👁️ Visibility",
-                    value=f"{current['vis_km']} km"
-                )
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">VISIBILITY</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{current['vis_km']}</div>
+                    <div style="color: #999; font-size: 0.8rem;">km</div>
+                </div>
+                """, unsafe_allow_html=True)
             
             with col3:
-                st.metric(
-                    label="☀️ UV Index",
-                    value=f"{current['uv']}"
-                )
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">UV INDEX</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{current['uv']}</div>
+                </div>
+                """, unsafe_allow_html=True)
             
-            with col4:
-                st.metric(
-                    label="🌡️ Dew Point",
-                    value=f"{current.get('dewpoint_c', 'N/A')}°C" if 'dewpoint_c' in current else "N/A"
-                )
+            st.markdown("</div>", unsafe_allow_html=True)
             
-            # Additional information
-            st.markdown("### Additional Information")
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.info(f"""
-                **🌍 Location Details:**
-                - **Country:** {location_info['country']}
-                - **Region:** {location_info['region']}
-                - **Timezone:** {location_info['tz_id']}
-                - **Local Time:** {location_info['localtime']}
-                """)
-            
-            with col2:
-                st.info(f"""
-                **🌤️ Current Conditions:**
-                - **Weather:** {current['condition']['text']}
-                - **Cloud Cover:** {current['cloud']}%
-                - **Precipitation:** {current['precip_mm']} mm
-                - **Wind Gust:** {current.get('gust_kph', 'N/A')} km/h
-                """)
-            
-            # Weather summary card
-            st.markdown("### Weather Summary")
-            summary_text = f"""
-            Currently in **{selected_province}**, it's **{current['condition']['text'].lower()}** 
-            with a temperature of **{current['temp_c']}°C** (feels like {current['feelslike_c']}°C). 
-            The humidity is at **{current['humidity']}%** with winds blowing at **{current['wind_kph']} km/h** 
-            from the **{current['wind_dir']}**. The visibility is **{current['vis_km']} km** 
-            and the UV index is **{current['uv']}**.
-            """
-            st.success(summary_text)
+            # Additional details in Apple style
+            st.markdown(f"""
+            <div style="margin-top: 2rem;">
+                <div class="metric-card" style="text-align: left; padding: 1.5rem;">
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">WEATHER DETAILS</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem;">
+                        <div><strong>Cloud Cover:</strong> {current['cloud']}%</div>
+                        <div><strong>Precipitation:</strong> {current['precip_mm']} mm</div>
+                        <div><strong>Local Time:</strong> {location_info['localtime'].split()[1]}</div>
+                        <div><strong>Timezone:</strong> {location_info['tz_id'].split('/')[-1]}</div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             
         else:
             st.error("Unable to fetch weather data. Please check your internet connection and try again.")
     
     else:
-        # Welcome message when no province is selected
-        st.markdown("### Welcome to Vietnam Weather Dashboard")
-        st.info("""
-        👆 **Select a province above** to view current weather conditions.
+        # Welcome message with Apple-style design
+        st.markdown("""
+        <div class="weather-card" style="text-align: center; margin-top: 3rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🌤️</div>
+            <div style="font-size: 1.5rem; font-weight: 300; margin-bottom: 1rem; color: #666;">
+                Select a province above to view current weather conditions
+            </div>
+            <div style="font-size: 1rem; color: #999; line-height: 1.6;">
+                Real-time weather data for all 63 Vietnamese provinces<br>
+                Powered by WeatherAPI.com
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        **Features:**
-        - 🔍 Search from all 63 Vietnamese provinces
-        - 🌡️ Current temperature and feels-like temperature
-        - 💧 Humidity and atmospheric pressure
-        - 💨 Wind speed and direction
-        - ☀️ UV index and visibility
-        - 🌤️ Weather conditions with icons
-        - 📍 Location and timezone information
+        # Quick access to popular cities
+        st.markdown("""
+        <div style="margin-top: 2rem;">
+            <div style="text-align: center; color: #666; margin-bottom: 1rem; font-size: 0.9rem;">POPULAR DESTINATIONS</div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        **Data Source:** WeatherAPI.com - providing accurate, real-time weather data.
-        """)
-        
-        # Display some provinces as examples
-        st.markdown("### Popular Provinces")
         col1, col2, col3 = st.columns(3)
-        
         popular_provinces = ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng"]
+        
         for i, province in enumerate(popular_provinces):
             with [col1, col2, col3][i]:
-                if st.button(f"📍 {province}", key=f"popular_{i}"):
+                if st.button(province, key=f"popular_{i}", use_container_width=True):
                     st.session_state.selected_province = province
                     st.rerun()
     
-    # Footer
-    st.markdown("---")
+    # Footer with minimal styling
     st.markdown("""
-    <div style="text-align: center; color: #666; padding: 20px;">
-        <p>🌤️ Vietnam Weather Dashboard | Powered by WeatherAPI.com</p>
-        <p>Real-time weather data for all 63 Vietnamese provinces</p>
+    <div style="text-align: center; color: #ccc; padding: 3rem 0 1rem 0; font-size: 0.8rem;">
+        Vietnam Weather Dashboard
     </div>
     """, unsafe_allow_html=True)
 
