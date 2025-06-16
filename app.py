@@ -739,13 +739,14 @@ def main():
                 """, unsafe_allow_html=True)
             
             # Fetch and display hourly forecast (if enabled)
+            forecast_data = None
             if show_forecast:
                 st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("hourly_forecast", language)}</div></div>', unsafe_allow_html=True)
                 
                 with st.spinner(get_text("loading_forecast", language)):
                     forecast_data = get_forecast_data(location, days=2)
             
-            if forecast_data and 'forecast' in forecast_data:
+            if show_forecast and forecast_data and 'forecast' in forecast_data:
                 # Get hourly data safely
                 try:
                     today_hours = forecast_data['forecast']['forecastday'][0]['hour']
@@ -796,7 +797,7 @@ def main():
                                 <div class="hourly-item">
                                     <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">{item['time']}</div>
                                     <img src="{item['icon']}" width="40" style="margin: 0.5rem 0;">
-                                    <div style="font-weight: 500;">{item['temp']}°</div>
+                                    <div style="font-weight: 500;">{item['temp']:.0f}{item['temp_symbol']}</div>
                                     <div style="font-size: 0.7rem; color: #999; margin-top: 0.3rem;">{item['rain']}%</div>
                                 </div>
                                 """, unsafe_allow_html=True)
@@ -808,8 +809,8 @@ def main():
                 except Exception as e:
                     st.info("Unable to load hourly forecast data.")
                 
-                # Weather alerts (if any)
-                if 'alerts' in forecast_data and forecast_data['alerts']['alert']:
+                # Weather alerts (if any and enabled)
+                if show_alerts and 'alerts' in forecast_data and forecast_data['alerts']['alert']:
                     st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("weather_alerts", language)}</div></div>', unsafe_allow_html=True)
                     
                     for alert in forecast_data['alerts']['alert']:
@@ -826,7 +827,7 @@ def main():
                         """, unsafe_allow_html=True)
             
             # 3-Day Forecast
-            if forecast_data and 'forecast' in forecast_data:
+            if show_forecast and forecast_data and 'forecast' in forecast_data:
                 st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("daily_forecast", language)}</div></div>', unsafe_allow_html=True)
                 
                 forecast_days = forecast_data['forecast']['forecastday']
@@ -837,6 +838,11 @@ def main():
                     date_str = date_obj.strftime('%b %d')
                     
                     day_data = day['day']
+                    
+                    # Apply temperature conversions for daily forecast
+                    max_temp_display = convert_temperature(day_data['maxtemp_c'], temp_unit)
+                    min_temp_display = convert_temperature(day_data['mintemp_c'], temp_unit)
+                    max_wind_display = convert_wind_speed(day_data['maxwind_kph'], wind_unit)
                     
                     # Calculate rain probability from hourly data
                     avg_rain_chance = sum([hour['chance_of_rain'] for hour in day['hour']]) / 24
@@ -853,12 +859,12 @@ def main():
                                 <div style="font-size: 0.8rem; color: #666; margin-top: 0.2rem;">{avg_rain_chance:.0f}%</div>
                             </div>
                             <div style="flex: 1; text-align: right;">
-                                <div style="font-weight: 500;">{day_data['maxtemp_c']:.0f}°</div>
-                                <div style="color: #666;">{day_data['mintemp_c']:.0f}°</div>
+                                <div style="font-weight: 500;">{max_temp_display:.0f}{temp_unit_symbol}</div>
+                                <div style="color: #666;">{min_temp_display:.0f}{temp_unit_symbol}</div>
                             </div>
                         </div>
                         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 0.8rem; color: #666;">
-                            {day_data['condition']['text']} • UV Index: {day_data['uv']} • Max Wind: {day_data['maxwind_kph']} km/h
+                            {day_data['condition']['text']} • UV Index: {day_data['uv']} • Max Wind: {max_wind_display:.0f} {wind_unit_label}
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
