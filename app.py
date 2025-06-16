@@ -27,7 +27,7 @@ TRANSLATIONS = {
         "weather_alerts": "WEATHER ALERTS",
         "popular_destinations": "POPULAR DESTINATIONS",
         "welcome_text": "Select a province above to view current weather conditions",
-        "powered_by": "Real-time weather data for all 63 Vietnamese provinces<br>Powered by WeatherAPI.com",
+        "powered_by": "Real-time weather data for all 63 Vietnamese provinces<br>Powered by VietSYNC",
         "cloud_cover": "Cloud Cover",
         "precipitation": "Precipitation",
         "local_time": "Local Time",
@@ -43,7 +43,24 @@ TRANSLATIONS = {
         "unhealthy_sensitive": "Unhealthy for Sensitive",
         "unhealthy": "Unhealthy",
         "very_unhealthy": "Very Unhealthy",
-        "hazardous": "Hazardous"
+        "hazardous": "Hazardous",
+        "settings": "Settings",
+        "temperature_unit": "Temperature Unit",
+        "wind_speed_unit": "Wind Speed Unit",
+        "pressure_unit": "Pressure Unit",
+        "auto_refresh": "Auto Refresh",
+        "refresh_interval": "Refresh Interval",
+        "show_alerts": "Show Weather Alerts",
+        "show_forecast": "Show Extended Forecast",
+        "celsius": "Celsius (°C)",
+        "fahrenheit": "Fahrenheit (°F)",
+        "kmh": "km/h",
+        "mph": "mph",
+        "mbar": "mbar",
+        "inhg": "inHg",
+        "minutes": "minutes",
+        "enabled": "Enabled",
+        "disabled": "Disabled"
     },
     "vi": {
         "title": "Thời Tiết Việt Nam",
@@ -66,7 +83,7 @@ TRANSLATIONS = {
         "weather_alerts": "CẢNH BÁO THỜI TIẾT",
         "popular_destinations": "ĐIỂM ĐẾN PHỔ BIẾN",
         "welcome_text": "Chọn một tỉnh thành ở trên để xem thông tin thời tiết hiện tại",
-        "powered_by": "Dữ liệu thời tiết thời gian thực cho 63 tỉnh thành Việt Nam<br>Được cung cấp bởi WeatherAPI.com",
+        "powered_by": "Dữ liệu thời tiết thời gian thực cho 63 tỉnh thành Việt Nam<br>Được cung cấp bởi VietSYNC",
         "cloud_cover": "Độ che phủ mây",
         "precipitation": "Lượng mưa",
         "local_time": "Giờ địa phương",
@@ -82,7 +99,24 @@ TRANSLATIONS = {
         "unhealthy_sensitive": "Không tốt cho nhóm nhạy cảm",
         "unhealthy": "Không tốt",
         "very_unhealthy": "Rất không tốt",
-        "hazardous": "Nguy hiểm"
+        "hazardous": "Nguy hiểm",
+        "settings": "Cài đặt",
+        "temperature_unit": "Đơn vị nhiệt độ",
+        "wind_speed_unit": "Đơn vị tốc độ gió",
+        "pressure_unit": "Đơn vị áp suất",
+        "auto_refresh": "Tự động làm mới",
+        "refresh_interval": "Thời gian làm mới",
+        "show_alerts": "Hiển thị cảnh báo thời tiết",
+        "show_forecast": "Hiển thị dự báo mở rộng",
+        "celsius": "Độ C (°C)",
+        "fahrenheit": "Độ F (°F)",
+        "kmh": "km/h",
+        "mph": "mph",
+        "mbar": "mbar",
+        "inhg": "inHg",
+        "minutes": "phút",
+        "enabled": "Bật",
+        "disabled": "Tắt"
     }
 }
 
@@ -292,17 +326,98 @@ def get_text(key, lang="en"):
     """Get translated text based on selected language"""
     return TRANSLATIONS[lang].get(key, TRANSLATIONS["en"].get(key, key))
 
+def convert_temperature(temp_c, unit):
+    """Convert temperature between Celsius and Fahrenheit"""
+    if unit == "fahrenheit":
+        return (temp_c * 9/5) + 32
+    return temp_c
+
+def convert_wind_speed(speed_kmh, unit):
+    """Convert wind speed between km/h and mph"""
+    if unit == "mph":
+        return speed_kmh * 0.621371
+    return speed_kmh
+
+def convert_pressure(pressure_mb, unit):
+    """Convert pressure between mbar and inHg"""
+    if unit == "inhg":
+        return pressure_mb * 0.02953
+    return pressure_mb
+
 def main():
-    # Language selection in sidebar
+    # Enhanced sidebar with settings
     with st.sidebar:
         st.markdown("### Language / Ngôn ngữ")
         language = st.selectbox(
-            "",
+            "Select Language",
             options=["en", "vi"],
             format_func=lambda x: "🇺🇸 English" if x == "en" else "🇻🇳 Tiếng Việt",
             index=0,
             label_visibility="collapsed"
         )
+        
+        st.markdown("---")
+        st.markdown(f"### {get_text('settings', language)}")
+        
+        # Temperature unit setting
+        temp_unit = st.selectbox(
+            get_text("temperature_unit", language),
+            options=["celsius", "fahrenheit"],
+            format_func=lambda x: get_text(x, language),
+            index=0
+        )
+        
+        # Wind speed unit setting
+        wind_unit = st.selectbox(
+            get_text("wind_speed_unit", language),
+            options=["kmh", "mph"],
+            format_func=lambda x: get_text(x, language),
+            index=0
+        )
+        
+        # Pressure unit setting
+        pressure_unit = st.selectbox(
+            get_text("pressure_unit", language),
+            options=["mbar", "inhg"],
+            format_func=lambda x: get_text(x, language),
+            index=0
+        )
+        
+        st.markdown("---")
+        
+        # Display options
+        show_alerts = st.checkbox(
+            get_text("show_alerts", language),
+            value=True
+        )
+        
+        show_forecast = st.checkbox(
+            get_text("show_forecast", language),
+            value=True
+        )
+        
+        # Auto refresh setting
+        auto_refresh = st.checkbox(
+            get_text("auto_refresh", language),
+            value=False
+        )
+        
+        if auto_refresh:
+            refresh_interval = st.slider(
+                f"{get_text('refresh_interval', language)} ({get_text('minutes', language)})",
+                min_value=1,
+                max_value=60,
+                value=5
+            )
+            
+            # Auto refresh implementation
+            import time
+            if 'last_refresh' not in st.session_state:
+                st.session_state.last_refresh = time.time()
+            
+            if time.time() - st.session_state.last_refresh > refresh_interval * 60:
+                st.session_state.last_refresh = time.time()
+                st.rerun()
     
     # Enhanced CSS for Apple Weather-like styling with animations
     st.markdown("""
@@ -481,6 +596,15 @@ def main():
             # Add weather-specific animation CSS
             st.markdown(f"<style>{animation_css}</style>", unsafe_allow_html=True)
             
+            # Apply unit conversions
+            temp_display = convert_temperature(current['temp_c'], temp_unit)
+            temp_unit_symbol = "°F" if temp_unit == "fahrenheit" else "°C"
+            feels_like_display = convert_temperature(current['feelslike_c'], temp_unit)
+            wind_display = convert_wind_speed(current['wind_kph'], wind_unit)
+            wind_unit_label = get_text(wind_unit, language)
+            pressure_display = convert_pressure(current['pressure_mb'], pressure_unit)
+            pressure_unit_label = get_text(pressure_unit, language)
+            
             # Dynamic animated weather card
             st.markdown(f"""
             <div class="dynamic-weather-card weather-animation fade-in" style="background: {gradient};">
@@ -489,10 +613,10 @@ def main():
                 </div>
                 <div class="temp-display">
                     <img src="{get_weather_icon_url(current['condition']['icon'])}" class="weather-icon-large" style="margin-bottom: 1rem;">
-                    <div class="main-temp">{current['temp_c']}°</div>
+                    <div class="main-temp">{temp_display:.0f}{temp_unit_symbol}</div>
                     <div class="condition-text">{current['condition']['text']}</div>
                     <div style="color: rgba(255, 255, 255, 0.7); margin-top: 0.5rem; font-size: 1rem;">
-                        H:{int(current['temp_c']) + 3}° L:{int(current['temp_c']) - 5}°
+                        H:{convert_temperature(current['temp_c'] + 3, temp_unit):.0f}{temp_unit_symbol} L:{convert_temperature(current['temp_c'] - 5, temp_unit):.0f}{temp_unit_symbol}
                     </div>
                 </div>
             </div>
@@ -510,7 +634,7 @@ def main():
                 st.markdown(f"""
                 <div class="metric-card">
                     <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("feels_like", language)}</div>
-                    <div style="font-size: 2rem; font-weight: 300;">{current['feelslike_c']}°</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{feels_like_display:.0f}{temp_unit_symbol}</div>
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -526,8 +650,8 @@ def main():
                 st.markdown(f"""
                 <div class="metric-card">
                     <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("wind", language)}</div>
-                    <div style="font-size: 2rem; font-weight: 300;">{current['wind_kph']}</div>
-                    <div style="color: #999; font-size: 0.8rem;">km/h {current['wind_dir']}</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{wind_display:.0f}</div>
+                    <div style="color: #999; font-size: 0.8rem;">{wind_unit_label} {current['wind_dir']}</div>
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -538,8 +662,8 @@ def main():
                 st.markdown(f"""
                 <div class="metric-card">
                     <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("pressure", language)}</div>
-                    <div style="font-size: 2rem; font-weight: 300;">{current['pressure_mb']}</div>
-                    <div style="color: #999; font-size: 0.8rem;">mb</div>
+                    <div style="font-size: 2rem; font-weight: 300;">{pressure_display:.1f}</div>
+                    <div style="color: #999; font-size: 0.8rem;">{pressure_unit_label}</div>
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -614,11 +738,12 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Fetch and display hourly forecast
-            st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("hourly_forecast", language)}</div></div>', unsafe_allow_html=True)
-            
-            with st.spinner(get_text("loading_forecast", language)):
-                forecast_data = get_forecast_data(location, days=2)
+            # Fetch and display hourly forecast (if enabled)
+            if show_forecast:
+                st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("hourly_forecast", language)}</div></div>', unsafe_allow_html=True)
+                
+                with st.spinner(get_text("loading_forecast", language)):
+                    forecast_data = get_forecast_data(location, days=2)
             
             if forecast_data and 'forecast' in forecast_data:
                 # Get hourly data safely
@@ -647,11 +772,12 @@ def main():
                                 else:
                                     continue
                             
-                            # Store data for rendering
+                            # Store data for rendering with unit conversions
                             hourly_items.append({
                                 'time': time_label,
                                 'icon': get_weather_icon_url(hour_data['condition']['icon']),
-                                'temp': hour_data['temp_c'],
+                                'temp': convert_temperature(hour_data['temp_c'], temp_unit),
+                                'temp_symbol': temp_unit_symbol,
                                 'rain': hour_data['chance_of_rain']
                             })
                         except (IndexError, KeyError) as e:
