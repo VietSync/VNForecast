@@ -120,13 +120,27 @@ TRANSLATIONS = {
     }
 }
 
-# Page configuration
+# Page configuration with mobile optimization
 st.set_page_config(
     page_title="Vietnam Weather Dashboard",
     page_icon="🌤️",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="auto",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': None
+    }
 )
+
+# Add mobile viewport meta tag for better mobile experience
+st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1E3A8A">
+""", unsafe_allow_html=True)
 
 # Load environment variables
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY", "your_api_key_here")
@@ -345,9 +359,16 @@ def convert_pressure(pressure_mb, unit):
     return pressure_mb
 
 def main():
-    # Enhanced sidebar with settings
+    # Enhanced sidebar with mobile-friendly settings
     with st.sidebar:
-        st.markdown("### Language / Ngôn ngữ")
+        # Mobile-friendly header
+        st.markdown("""
+        <div style="text-align: center; padding: 1rem 0;">
+            <h3 style="margin: 0; color: #1a1a1a;">⚙️ Settings</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("#### Language / Ngôn ngữ")
         language = st.selectbox(
             "Select Language",
             options=["en", "vi"],
@@ -511,6 +532,8 @@ def main():
         padding: 1rem 0;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
     }
     .hourly-forecast::-webkit-scrollbar {
         display: none;
@@ -540,23 +563,166 @@ def main():
         to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Mobile Responsiveness */
+    /* Enhanced Mobile Responsiveness */
     @media (max-width: 768px) {
-        .main-header { font-size: 2rem; padding: 1rem 0 0.5rem 0; }
-        .main-temp { font-size: 3.5rem; }
-        .condition-text { font-size: 1.2rem; }
-        .weather-icon-large { width: 80px; height: 80px; }
-        .dynamic-weather-card { padding: 2rem 1rem; margin: 1rem 0; }
-        .metric-card { padding: 1rem; margin: 0.3rem 0; }
-        .hourly-item { min-width: 70px; padding: 0.8rem 0.3rem; }
-        .search-container { max-width: 100%; padding: 0 1rem; }
+        .main-header { 
+            font-size: 2rem; 
+            padding: 1rem 0 0.5rem 0;
+            line-height: 1.2;
+        }
+        .subtitle {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 0 1rem;
+        }
+        .main-temp { 
+            font-size: 3.5rem;
+            line-height: 1;
+        }
+        .condition-text { 
+            font-size: 1.2rem;
+            margin-top: 0.3rem;
+        }
+        .location-text {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+        }
+        .weather-icon-large { 
+            width: 80px; 
+            height: 80px; 
+        }
+        .dynamic-weather-card { 
+            padding: 1.5rem 1rem; 
+            margin: 1rem 0.5rem;
+            border-radius: 20px;
+        }
+        .metric-card { 
+            padding: 1rem 0.8rem; 
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+        }
+        .metric-card > div:first-child {
+            font-size: 0.8rem !important;
+            margin-bottom: 0.3rem !important;
+        }
+        .metric-card > div:nth-child(2) {
+            font-size: 1.5rem !important;
+        }
+        .hourly-item { 
+            min-width: 70px; 
+            padding: 0.8rem 0.3rem;
+            font-size: 0.8rem;
+        }
+        .search-container { 
+            max-width: 100%; 
+            padding: 0 1rem; 
+            margin: 0 auto 1.5rem auto;
+        }
+        .stSelectbox > div > div {
+            font-size: 1rem;
+            padding: 0.8rem;
+        }
+        
+        /* Mobile grid adjustments */
+        .mobile-grid-2 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.5rem !important;
+        }
+        .mobile-grid-1 {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 0.5rem !important;
+        }
+        
+        /* Touch-friendly buttons */
+        .stButton > button {
+            height: 3rem;
+            font-size: 1rem;
+            border-radius: 12px;
+            touch-action: manipulation;
+        }
+        
+        /* Improved scrolling for hourly forecast */
+        .hourly-forecast {
+            padding: 1rem 0.5rem;
+            -webkit-overflow-scrolling: touch;
+        }
     }
     
     @media (max-width: 480px) {
-        .main-temp { font-size: 3rem; }
-        .metric-card { font-size: 0.9rem; }
-        .hourly-forecast { gap: 0.5rem; }
-        .hourly-item { min-width: 60px; }
+        .main-header { 
+            font-size: 1.8rem;
+            padding: 0.8rem 0 0.3rem 0;
+        }
+        .subtitle {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .main-temp { 
+            font-size: 3rem;
+            margin: 0.5rem 0;
+        }
+        .condition-text {
+            font-size: 1.1rem;
+        }
+        .dynamic-weather-card {
+            padding: 1rem 0.8rem;
+            margin: 0.8rem 0.3rem;
+        }
+        .metric-card { 
+            font-size: 0.85rem;
+            padding: 0.8rem 0.6rem;
+        }
+        .metric-card > div:nth-child(2) {
+            font-size: 1.3rem !important;
+        }
+        .hourly-forecast { 
+            gap: 0.3rem;
+            padding: 0.8rem 0.3rem;
+        }
+        .hourly-item { 
+            min-width: 60px;
+            padding: 0.6rem 0.2rem;
+            font-size: 0.75rem;
+        }
+        .hourly-item img {
+            width: 30px !important;
+            margin: 0.3rem 0 !important;
+        }
+        .search-container {
+            padding: 0 0.5rem;
+        }
+        
+        /* Stack columns on very small screens */
+        .mobile-stack {
+            flex-direction: column !important;
+        }
+        .mobile-stack > div {
+            width: 100% !important;
+            margin-bottom: 0.5rem;
+        }
+    }
+    
+    /* Touch and interaction improvements */
+    @media (hover: none) and (pointer: coarse) {
+        .metric-card:hover {
+            transform: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .weather-icon-large:hover {
+            transform: none;
+        }
+        
+        /* Improve tap targets */
+        .stSelectbox, .stCheckbox, .stSlider {
+            touch-action: manipulation;
+        }
+        
+        /* Prevent zoom on input focus */
+        input, select, textarea {
+            font-size: 16px !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -622,12 +788,12 @@ def main():
             </div>
             """, unsafe_allow_html=True)
             
-            # Apple-style metrics grid
+            # Apple-style metrics grid with mobile optimization
             st.markdown("""
-            <div style="margin: 2rem 0;">
+            <div class="metrics-container" style="margin: 2rem 0;">
             """, unsafe_allow_html=True)
             
-            # First row of metrics
+            # Responsive metrics layout
             col1, col2, col3 = st.columns(3)
             
             with col1:
@@ -656,9 +822,9 @@ def main():
                 """, unsafe_allow_html=True)
             
             # Second row of metrics
-            col1, col2, col3 = st.columns(3)
+            col4, col5, col6 = st.columns(3)
             
-            with col1:
+            with col4:
                 st.markdown(f"""
                 <div class="metric-card">
                     <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("pressure", language)}</div>
@@ -667,7 +833,7 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
             
-            with col2:
+            with col5:
                 st.markdown(f"""
                 <div class="metric-card">
                     <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("visibility", language)}</div>
@@ -676,7 +842,7 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
             
-            with col3:
+            with col6:
                 st.markdown(f"""
                 <div class="metric-card">
                     <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("uv_index", language)}</div>
@@ -893,12 +1059,36 @@ def main():
         </div>
         """, unsafe_allow_html=True)
         
-        col1, col2, col3 = st.columns(3)
+        # Mobile-optimized popular provinces layout
         popular_provinces = ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng"]
         
+        # Create responsive grid for popular provinces
+        st.markdown("""
+        <style>
+        .popular-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        @media (max-width: 768px) {
+            .popular-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        
+        col1, col2, col3 = st.columns(3)
         for i, province in enumerate(popular_provinces):
             with [col1, col2, col3][i]:
-                if st.button(province, key=f"popular_{i}", use_container_width=True):
+                if st.button(
+                    province, 
+                    key=f"popular_{i}", 
+                    use_container_width=True,
+                    help=f"View weather for {province}"
+                ):
                     st.session_state.selected_province = province
                     st.rerun()
     
