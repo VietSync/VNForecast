@@ -4,6 +4,88 @@ import os
 from datetime import datetime
 import json
 
+# Language translations
+TRANSLATIONS = {
+    "en": {
+        "title": "Vietnam Weather",
+        "subtitle": "Real-time weather for all 63 provinces",
+        "search_placeholder": "Search for a province...",
+        "search_label": "Search provinces",
+        "loading": "Getting weather data for",
+        "loading_forecast": "Loading hourly forecast...",
+        "feels_like": "FEELS LIKE",
+        "humidity": "HUMIDITY",
+        "wind": "WIND",
+        "pressure": "PRESSURE",
+        "visibility": "VISIBILITY",
+        "uv_index": "UV INDEX",
+        "air_quality": "AIR QUALITY",
+        "weather_details": "WEATHER DETAILS",
+        "comfort_index": "COMFORT INDEX",
+        "hourly_forecast": "24-HOUR FORECAST",
+        "daily_forecast": "3-DAY FORECAST",
+        "weather_alerts": "WEATHER ALERTS",
+        "popular_destinations": "POPULAR DESTINATIONS",
+        "welcome_text": "Select a province above to view current weather conditions",
+        "powered_by": "Real-time weather data for all 63 Vietnamese provinces<br>Powered by WeatherAPI.com",
+        "cloud_cover": "Cloud Cover",
+        "precipitation": "Precipitation",
+        "local_time": "Local Time",
+        "timezone": "Timezone",
+        "heat_index": "Heat Index",
+        "wind_chill": "Wind Chill",
+        "wind_gust": "Wind Gust",
+        "dew_point": "Dew Point",
+        "today": "Today",
+        "now": "Now",
+        "good": "Good",
+        "moderate": "Moderate",
+        "unhealthy_sensitive": "Unhealthy for Sensitive",
+        "unhealthy": "Unhealthy",
+        "very_unhealthy": "Very Unhealthy",
+        "hazardous": "Hazardous"
+    },
+    "vi": {
+        "title": "Thời Tiết Việt Nam",
+        "subtitle": "Dữ liệu thời tiết thời gian thực cho 63 tỉnh thành",
+        "search_placeholder": "Tìm kiếm tỉnh thành...",
+        "search_label": "Tìm kiếm tỉnh thành",
+        "loading": "Đang tải dữ liệu thời tiết cho",
+        "loading_forecast": "Đang tải dự báo theo giờ...",
+        "feels_like": "CẢM GIÁC NHƯ",
+        "humidity": "ĐỘ ẨM",
+        "wind": "GIÓ",
+        "pressure": "ÁP SUẤT",
+        "visibility": "TẦM NHÌN",
+        "uv_index": "CHỈ SỐ UV",
+        "air_quality": "CHẤT LƯỢNG KHÔNG KHÍ",
+        "weather_details": "CHI TIẾT THỜI TIẾT",
+        "comfort_index": "CHỈ SỐ THOẢI MÁI",
+        "hourly_forecast": "DỰ BÁO 24 GIỜ",
+        "daily_forecast": "DỰ BÁO 3 NGÀY",
+        "weather_alerts": "CẢNH BÁO THỜI TIẾT",
+        "popular_destinations": "ĐIỂM ĐẾN PHỔ BIẾN",
+        "welcome_text": "Chọn một tỉnh thành ở trên để xem thông tin thời tiết hiện tại",
+        "powered_by": "Dữ liệu thời tiết thời gian thực cho 63 tỉnh thành Việt Nam<br>Được cung cấp bởi WeatherAPI.com",
+        "cloud_cover": "Độ che phủ mây",
+        "precipitation": "Lượng mưa",
+        "local_time": "Giờ địa phương",
+        "timezone": "múi giờ",
+        "heat_index": "Chỉ số nóng",
+        "wind_chill": "Gió lạnh",
+        "wind_gust": "Gió giật",
+        "dew_point": "Điểm sương",
+        "today": "Hôm nay",
+        "now": "Bây giờ",
+        "good": "Tốt",
+        "moderate": "Vừa phải",
+        "unhealthy_sensitive": "Không tốt cho nhóm nhạy cảm",
+        "unhealthy": "Không tốt",
+        "very_unhealthy": "Rất không tốt",
+        "hazardous": "Nguy hiểm"
+    }
+}
+
 # Page configuration
 st.set_page_config(
     page_title="Vietnam Weather Dashboard",
@@ -206,7 +288,22 @@ def get_weather_animation(condition):
         .weather-animation { animation: gentle 4s ease-in-out infinite; }
         """
 
+def get_text(key, lang="en"):
+    """Get translated text based on selected language"""
+    return TRANSLATIONS[lang].get(key, TRANSLATIONS["en"].get(key, key))
+
 def main():
+    # Language selection in sidebar
+    with st.sidebar:
+        st.markdown("### Language / Ngôn ngữ")
+        language = st.selectbox(
+            "",
+            options=["en", "vi"],
+            format_func=lambda x: "🇺🇸 English" if x == "en" else "🇻🇳 Tiếng Việt",
+            index=0,
+            label_visibility="collapsed"
+        )
+    
     # Enhanced CSS for Apple Weather-like styling with animations
     st.markdown("""
     <style>
@@ -352,16 +449,16 @@ def main():
 
     
     # Header
-    st.markdown('<div class="main-header">Vietnam Weather</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtitle">Real-time weather for all 63 provinces</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="main-header">{get_text("title", language)}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="subtitle">{get_text("subtitle", language)}</div>', unsafe_allow_html=True)
     
     # Province selection with custom styling
     st.markdown('<div class="search-container">', unsafe_allow_html=True)
     selected_province = st.selectbox(
-        "Search provinces",
+        get_text("search_label", language),
         options=list(VIETNAMESE_PROVINCES.keys()),
         index=None,
-        placeholder="Search for a province...",
+        placeholder=get_text("search_placeholder", language),
         label_visibility="collapsed"
     )
     st.markdown('</div>', unsafe_allow_html=True)
@@ -370,7 +467,7 @@ def main():
         location = VIETNAMESE_PROVINCES[selected_province]
         
         # Fetch weather data
-        with st.spinner(f"Getting weather data for {selected_province}..."):
+        with st.spinner(f"{get_text('loading', language)} {selected_province}..."):
             weather_data = get_weather_data(location)
         
         if weather_data:
@@ -412,7 +509,7 @@ def main():
             with col1:
                 st.markdown(f"""
                 <div class="metric-card">
-                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">FEELS LIKE</div>
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("feels_like", language)}</div>
                     <div style="font-size: 2rem; font-weight: 300;">{current['feelslike_c']}°</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -420,7 +517,7 @@ def main():
             with col2:
                 st.markdown(f"""
                 <div class="metric-card">
-                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">HUMIDITY</div>
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("humidity", language)}</div>
                     <div style="font-size: 2rem; font-weight: 300;">{current['humidity']}%</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -428,7 +525,7 @@ def main():
             with col3:
                 st.markdown(f"""
                 <div class="metric-card">
-                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">WIND</div>
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("wind", language)}</div>
                     <div style="font-size: 2rem; font-weight: 300;">{current['wind_kph']}</div>
                     <div style="color: #999; font-size: 0.8rem;">km/h {current['wind_dir']}</div>
                 </div>
@@ -440,7 +537,7 @@ def main():
             with col1:
                 st.markdown(f"""
                 <div class="metric-card">
-                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">PRESSURE</div>
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("pressure", language)}</div>
                     <div style="font-size: 2rem; font-weight: 300;">{current['pressure_mb']}</div>
                     <div style="color: #999; font-size: 0.8rem;">mb</div>
                 </div>
@@ -449,7 +546,7 @@ def main():
             with col2:
                 st.markdown(f"""
                 <div class="metric-card">
-                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">VISIBILITY</div>
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("visibility", language)}</div>
                     <div style="font-size: 2rem; font-weight: 300;">{current['vis_km']}</div>
                     <div style="color: #999; font-size: 0.8rem;">km</div>
                 </div>
@@ -458,7 +555,7 @@ def main():
             with col3:
                 st.markdown(f"""
                 <div class="metric-card">
-                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">UV INDEX</div>
+                    <div style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{get_text("uv_index", language)}</div>
                     <div style="font-size: 2rem; font-weight: 300;">{current['uv']}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -518,9 +615,9 @@ def main():
                 """, unsafe_allow_html=True)
             
             # Fetch and display hourly forecast
-            st.markdown('<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">24-HOUR FORECAST</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("hourly_forecast", language)}</div></div>', unsafe_allow_html=True)
             
-            with st.spinner("Loading hourly forecast..."):
+            with st.spinner(get_text("loading_forecast", language)):
                 forecast_data = get_forecast_data(location, days=2)
             
             if forecast_data and 'forecast' in forecast_data:
@@ -536,7 +633,7 @@ def main():
                             if i < (24 - current_hour):
                                 # Today's remaining hours
                                 hour_data = today_hours[current_hour + i]
-                                time_label = "Now" if i == 0 else f"{(current_hour + i):02d}:00"
+                                time_label = get_text("now", language) if i == 0 else f"{(current_hour + i):02d}:00"
                             else:
                                 # Tomorrow's hours
                                 if len(forecast_data['forecast']['forecastday']) > 1:
@@ -550,24 +647,35 @@ def main():
                                 else:
                                     continue
                             
-                            hourly_items.append(f"""
-                            <div class="hourly-item">
-                                <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">{time_label}</div>
-                                <img src="{get_weather_icon_url(hour_data['condition']['icon'])}" width="40" style="margin: 0.5rem 0;">
-                                <div style="font-weight: 500;">{hour_data['temp_c']}°</div>
-                                <div style="font-size: 0.7rem; color: #999; margin-top: 0.3rem;">{hour_data['chance_of_rain']}%</div>
-                            </div>
-                            """)
+                            # Store data for rendering
+                            hourly_items.append({
+                                'time': time_label,
+                                'icon': get_weather_icon_url(hour_data['condition']['icon']),
+                                'temp': hour_data['temp_c'],
+                                'rain': hour_data['chance_of_rain']
+                            })
                         except (IndexError, KeyError) as e:
                             # Skip this hour if data is not available
                             continue
                     
                     if hourly_items:
-                        st.markdown(f"""
-                        <div class="hourly-forecast">
-                            {''.join(hourly_items)}
-                        </div>
-                        """, unsafe_allow_html=True)
+                        # Render hourly forecast without string concatenation
+                        st.markdown('<div class="hourly-forecast">', unsafe_allow_html=True)
+                        
+                        # Create columns for hourly items
+                        cols = st.columns(len(hourly_items))
+                        for i, item in enumerate(hourly_items):
+                            with cols[i]:
+                                st.markdown(f"""
+                                <div class="hourly-item">
+                                    <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">{item['time']}</div>
+                                    <img src="{item['icon']}" width="40" style="margin: 0.5rem 0;">
+                                    <div style="font-weight: 500;">{item['temp']}°</div>
+                                    <div style="font-size: 0.7rem; color: #999; margin-top: 0.3rem;">{item['rain']}%</div>
+                                </div>
+                                """, unsafe_allow_html=True)
+                        
+                        st.markdown('</div>', unsafe_allow_html=True)
                     else:
                         st.info("Hourly forecast data not available for this location.")
                         
@@ -576,7 +684,7 @@ def main():
                 
                 # Weather alerts (if any)
                 if 'alerts' in forecast_data and forecast_data['alerts']['alert']:
-                    st.markdown('<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">WEATHER ALERTS</div></div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("weather_alerts", language)}</div></div>', unsafe_allow_html=True)
                     
                     for alert in forecast_data['alerts']['alert']:
                         st.markdown(f"""
