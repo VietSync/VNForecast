@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 import os
-from .env import load_dotenv
+from dotenv import load_dotenv
 from datetime import datetime
 import json
 # BETA Change
