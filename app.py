@@ -524,40 +524,55 @@ def main():
                 forecast_data = get_forecast_data(location, days=2)
             
             if forecast_data and 'forecast' in forecast_data:
-                # Get today and tomorrow's hourly data
-                today_hours = forecast_data['forecast']['forecastday'][0]['hour']
-                current_hour = int(location_info['localtime'].split()[1].split(':')[0])
-                
-                # Show next 12 hours starting from current hour
-                hourly_items = []
-                for i in range(12):
-                    hour_index = (current_hour + i) % 24
-                    if i < (24 - current_hour):
-                        hour_data = today_hours[hour_index]
-                        time_label = "Now" if i == 0 else f"{hour_index:02d}:00"
-                    else:
-                        # Tomorrow's data
-                        if len(forecast_data['forecast']['forecastday']) > 1:
-                            tomorrow_hours = forecast_data['forecast']['forecastday'][1]['hour']
-                            hour_data = tomorrow_hours[hour_index]
-                            time_label = f"{hour_index:02d}:00"
-                        else:
+                # Get hourly data safely
+                try:
+                    today_hours = forecast_data['forecast']['forecastday'][0]['hour']
+                    current_hour = int(location_info['localtime'].split()[1].split(':')[0])
+                    
+                    # Show next 12 hours starting from current hour
+                    hourly_items = []
+                    for i in range(12):
+                        try:
+                            if i < (24 - current_hour):
+                                # Today's remaining hours
+                                hour_data = today_hours[current_hour + i]
+                                time_label = "Now" if i == 0 else f"{(current_hour + i):02d}:00"
+                            else:
+                                # Tomorrow's hours
+                                if len(forecast_data['forecast']['forecastday']) > 1:
+                                    tomorrow_hours = forecast_data['forecast']['forecastday'][1]['hour']
+                                    tomorrow_hour_index = (current_hour + i) - 24
+                                    if tomorrow_hour_index < len(tomorrow_hours):
+                                        hour_data = tomorrow_hours[tomorrow_hour_index]
+                                        time_label = f"{tomorrow_hour_index:02d}:00"
+                                    else:
+                                        continue
+                                else:
+                                    continue
+                            
+                            hourly_items.append(f"""
+                            <div class="hourly-item">
+                                <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">{time_label}</div>
+                                <img src="{get_weather_icon_url(hour_data['condition']['icon'])}" width="40" style="margin: 0.5rem 0;">
+                                <div style="font-weight: 500;">{hour_data['temp_c']}°</div>
+                                <div style="font-size: 0.7rem; color: #999; margin-top: 0.3rem;">{hour_data['chance_of_rain']}%</div>
+                            </div>
+                            """)
+                        except (IndexError, KeyError) as e:
+                            # Skip this hour if data is not available
                             continue
                     
-                    hourly_items.append(f"""
-                    <div class="hourly-item">
-                        <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.5rem;">{time_label}</div>
-                        <img src="{get_weather_icon_url(hour_data['condition']['icon'])}" width="40" style="margin: 0.5rem 0;">
-                        <div style="font-weight: 500;">{hour_data['temp_c']}°</div>
-                        <div style="font-size: 0.7rem; color: #999; margin-top: 0.3rem;">{hour_data['chance_of_rain']}%</div>
-                    </div>
-                    """)
-                
-                st.markdown(f"""
-                <div class="hourly-forecast">
-                    {''.join(hourly_items)}
-                </div>
-                """, unsafe_allow_html=True)
+                    if hourly_items:
+                        st.markdown(f"""
+                        <div class="hourly-forecast">
+                            {''.join(hourly_items)}
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.info("Hourly forecast data not available for this location.")
+                        
+                except Exception as e:
+                    st.info("Unable to load hourly forecast data.")
                 
                 # Weather alerts (if any)
                 if 'alerts' in forecast_data and forecast_data['alerts']['alert']:
