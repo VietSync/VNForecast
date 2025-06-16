@@ -1,8 +1,12 @@
 import streamlit as st
 import requests
 import os
+from dotenv import load_dotenv
 from datetime import datetime
 import json
+# BETA Change
+load_dotenv()
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 
 # Language translations
 TRANSLATIONS = {
@@ -215,7 +219,7 @@ VIETNAMESE_PROVINCES = {
 def get_weather_data(location):
     """Fetch current weather data from WeatherAPI.com"""
     try:
-        url = f"http://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={location}&aqi=yes"
+        url = f"https://api.weatherapi.com/v1/current.json?key={WEATHER_API_KEY}&q={location}&aqi=yes"
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         return response.json()
@@ -229,7 +233,7 @@ def get_weather_data(location):
 def get_forecast_data(location, days=3):
     """Fetch forecast data from WeatherAPI.com"""
     try:
-        url = f"http://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY}&q={location}&days={days}&aqi=no&alerts=yes"
+        url = f"https://api.weatherapi.com/v1/forecast.json?key={WEATHER_API_KEY}&q={location}&days={days}&aqi=no&alerts=yes"
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         return response.json()
