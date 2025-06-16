@@ -170,27 +170,7 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    # Check for API key
-    if WEATHER_API_KEY == "your_api_key_here" or not WEATHER_API_KEY:
-        st.error("⚠️ WeatherAPI key not found!")
-        st.markdown("""
-        ### 🔑 How to add your WeatherAPI key:
-        
-        **Option 1: Using .env file (Recommended)**
-        1. Copy `.env.example` to `.env`
-        2. Edit the `.env` file and replace `your_api_key_here` with your actual API key
-        3. Restart the application
-        
-        **Option 2: Using Replit Secrets**
-        1. Go to Replit Secrets (lock icon in sidebar)
-        2. Add a new secret: `WEATHER_API_KEY`
-        3. Paste your WeatherAPI key as the value
-        4. Restart the application
-        
-        **Get your free API key:**
-        Visit [WeatherAPI.com](https://www.weatherapi.com/) and sign up for a free account.
-        """)
-        return
+
     
     # Header
     st.markdown('<div class="main-header">Vietnam Weather</div>', unsafe_allow_html=True)
