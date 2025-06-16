@@ -701,13 +701,13 @@ def main():
             
             # 3-Day Forecast
             if forecast_data and 'forecast' in forecast_data:
-                st.markdown('<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">3-DAY FORECAST</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="margin-top: 2rem;"><div style="color: #666; font-size: 0.9rem; margin-bottom: 1rem;">{get_text("daily_forecast", language)}</div></div>', unsafe_allow_html=True)
                 
                 forecast_days = forecast_data['forecast']['forecastday']
                 
                 for i, day in enumerate(forecast_days):
                     date_obj = datetime.strptime(day['date'], '%Y-%m-%d')
-                    day_name = "Today" if i == 0 else date_obj.strftime('%A')
+                    day_name = get_text("today", language) if i == 0 else date_obj.strftime('%A')
                     date_str = date_obj.strftime('%b %d')
                     
                     day_data = day['day']
@@ -742,23 +742,22 @@ def main():
     
     else:
         # Welcome message with Apple-style design
-        st.markdown("""
+        st.markdown(f"""
         <div class="weather-card" style="text-align: center; margin-top: 3rem;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🌤️</div>
             <div style="font-size: 1.5rem; font-weight: 300; margin-bottom: 1rem; color: #666;">
-                Select a province above to view current weather conditions
+                {get_text("welcome_text", language)}
             </div>
             <div style="font-size: 1rem; color: #999; line-height: 1.6;">
-                Real-time weather data for all 63 Vietnamese provinces<br>
-                Powered by WeatherAPI.com
+                {get_text("powered_by", language)}
             </div>
         </div>
         """, unsafe_allow_html=True)
         
         # Quick access to popular cities
-        st.markdown("""
+        st.markdown(f"""
         <div style="margin-top: 2rem;">
-            <div style="text-align: center; color: #666; margin-bottom: 1rem; font-size: 0.9rem;">POPULAR DESTINATIONS</div>
+            <div style="text-align: center; color: #666; margin-bottom: 1rem; font-size: 0.9rem;">{get_text("popular_destinations", language)}</div>
         </div>
         """, unsafe_allow_html=True)
         
@@ -772,9 +771,9 @@ def main():
                     st.rerun()
     
     # Footer with minimal styling
-    st.markdown("""
+    st.markdown(f"""
     <div style="text-align: center; color: #ccc; padding: 3rem 0 1rem 0; font-size: 0.8rem;">
-        Vietnam Weather Dashboard
+        {get_text("title", language)}
     </div>
     """, unsafe_allow_html=True)
 
