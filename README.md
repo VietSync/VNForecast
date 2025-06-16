@@ -59,4 +59,6 @@ A beautiful, Apple Weather-inspired Streamlit dashboard providing real-time weat
 4. **Run the application**
    ```bash
    streamlit run app.py
+
+   NOTES: Streamlit port is 8501,Normal Port IS 5000
    
