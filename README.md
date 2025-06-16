@@ -9,17 +9,26 @@ A beautiful, Apple Weather-inspired Streamlit dashboard providing real-time weat
 ## ✨ Features
 
 - **🔍 Smart Province Search**: Type-ahead searchable dropdown with all 63 Vietnamese provinces
+- **🎨 Dynamic Weather Animations**: Weather-specific background gradients and animations
+  - Sunny conditions: Golden gradients with glowing sun effects
+  - Rainy weather: Blue gradients with animated raindrops
+  - Cloudy skies: Floating cloud animations
+  - Stormy weather: Lightning effects and dark themes
 - **🌡️ Comprehensive Weather Data**: 
-  - Current temperature and "feels like" temperature
-  - Humidity and atmospheric pressure
-  - Wind speed, direction, and gusts
-  - UV index and visibility
-  - Weather conditions with icons
-- **📍 Location Information**: Detailed location data with timezone
-- **🎨 Clean Interface**: Apple Weather-inspired design with metric cards
-- **📱 Mobile Responsive**: Optimized for all device sizes
-- **🌙 Theme Support**: Built-in light/dark theme toggle
-- **⚡ Real-time Data**: Live weather updates from WeatherAPI.com
+  - Current temperature with dynamic color-coded backgrounds
+  - Feels-like temperature and comfort indices
+  - Humidity, pressure, and atmospheric conditions
+  - Wind speed, direction, gusts, and wind chill
+  - UV index and visibility metrics
+  - Dew point and heat index calculations
+- **🌍 Air Quality Monitoring**: Real-time AQI data with color-coded health indicators
+- **⏰ 24-Hour Forecast**: Scrollable hourly weather predictions with precipitation chances
+- **📅 3-Day Extended Forecast**: Daily weather outlook with detailed conditions
+- **⚠️ Weather Alerts**: Automatic severe weather warnings and advisories
+- **📍 Location Intelligence**: Detailed location data with timezone information
+- **📱 Mobile Responsive**: Fully optimized for all device sizes with touch-friendly interface
+- **🎭 Apple Weather UI**: Glassmorphism cards, smooth animations, and premium typography
+- **⚡ Real-time Data**: Live weather updates from WeatherAPI.com with comprehensive coverage
 
 ## 🚀 Quick Start
 
