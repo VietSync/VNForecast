@@ -1,6 +1,7 @@
-# 🌤️ Vietnam Weather Dashboard
-## By VietSYNC
-A beautiful, Apple Weather-inspired Streamlit dashboard providing real-time weather information for all 63 Vietnamese provinces. Built with modern UI/UX principles and powered by WeatherAPI.com.
+# 🌤️ VNForecast
+## (Also Known as Vietnam Weather Dashboard)
+### By VietSYNC
+A beautiful, ModernWeather-inspired dashboard providing real-time weather information for all 63 Vietnamese provinces. Built with modern UI/UX principles and powered by WeatherAPI.com.
 
 ![Vietnam Weather Dashboard](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -27,7 +28,7 @@ A beautiful, Apple Weather-inspired Streamlit dashboard providing real-time weat
 - **⚠️ Weather Alerts**: Automatic severe weather warnings and advisories
 - **📍 Location Intelligence**: Detailed location data with timezone information
 - **📱 Mobile Responsive**: Fully optimized for all device sizes with touch-friendly interface
-- **🎭 Apple Weather UI**: Glassmorphism cards, smooth animations, and premium typography
+- **🎭 Modern Weather UI**: Glassmorphism cards, smooth animations, and premium typography
 - **⚡ Real-time Data**: Live weather updates from WeatherAPI.com with comprehensive coverage
 
 ## 🚀 Quick Start
@@ -55,7 +56,7 @@ A beautiful, Apple Weather-inspired Streamlit dashboard providing real-time weat
    cp .env.example .env
    # Edit .env file and add your WeatherAPI key
    ```
-
+### Any Questions? Contact VietSYNC via our Github Profile Bio
 4. **Run the application**
    ```bash
    streamlit run app.py
