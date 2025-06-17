@@ -1,7 +1,8 @@
 # 🌤️ VNForecast
 ## (Also Known as Vietnam Weather Dashboard)
 ### By VietSYNC
-A beautiful, ModernWeather-inspired dashboard providing real-time weather information for all 63 Vietnamese provinces. Built with modern UI/UX principles and powered by WeatherAPI.com.
+> 🌍 [English](README.md) | [Tiếng Việt](README.vie.md)
+#### A beautiful, ModernWeather-inspired dashboard providing real-time weather information for all 63 Vietnamese provinces. Built with modern UI/UX principles and powered by WeatherAPI.com.
 
 ![Vietnam Weather Dashboard](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
