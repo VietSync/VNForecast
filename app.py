@@ -4,7 +4,8 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 import json
-# BETA Change
+# Force redeploy
+# update check: dotenv load fix
 load_dotenv()
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 
