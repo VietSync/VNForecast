@@ -1,1 +1,53 @@
+# Core app
+streamlit==1.45.1
 python-dotenv==1.1.0
+2
+# Data handling
+pandas==2.3.0
+numpy==2.3.0
+python-dateutil==2.9.0.post0
+pytz==2025.2
+tzdata==2025.2
+
+# Web requests
+requests==2.32.4
+urllib3==2.4.0
+charset-normalizer==3.4.2
+idna==3.10
+certifi==2025.6.15
+
+# Visuals
+pydeck==0.9.1
+altair==5.5.0
+pillow==11.2.1
+
+# JSON + validation
+jsonschema==4.24.0
+jsonschema-specifications==2025.4.1
+referencing==0.36.2
+rpds-py==0.25.1
+
+# Utilities
+typing-extensions==4.14.0
+packaging==24.2
+attrs==25.3.0
+tenacity==9.1.2
+tornado==6.5.1
+blinker==1.9.0
+cachetools==5.5.2
+six==1.17.0
+
+# Git for versioned data (if used)
+gitdb==4.0.12
+gitpython==3.1.44
+smmap==5.0.2
+
+# File watching (used by Streamlit internally)
+watchdog==6.0.0
+
+# Template engine
+jinja2==3.1.6
+markupsafe==3.0.2
+
+# Optional — Arrow-based performance (if you use `pyarrow`)
+pyarrow==20.0.0
