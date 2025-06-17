@@ -1,7 +1,7 @@
 # 🌤️ Vietnam Weather Dashboard
 ## Được tạo bởi VietSYNC
 > 🌍 [English](README.md) | [Tiếng Việt](README.vie.md)
-> Bảng thông tin thời tiết hiện đại, đẹp mắt cung cấp thông tin thời tiết theo thời gian thực cho tất cả 63 tỉnh thành của Việt Nam. Được xây dựng với các nguyên tắc UI/UX hiện đại và được hỗ trợ bởi WeatherAPI.com.
+#### Bảng thông tin thời tiết hiện đại, đẹp mắt cung cấp thông tin thời tiết theo thời gian thực cho tất cả 63 tỉnh thành của Việt Nam. Được xây dựng với các nguyên tắc UI/UX hiện đại và được hỗ trợ bởi WeatherAPI.com.
 
 ![Vietnam Weather Dashboard](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
